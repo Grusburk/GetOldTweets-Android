@@ -1,6 +1,4 @@
-package me.jhenrique.model;
-
-import java.util.Date;
+package com.d4t.getoldtweetslibrary.model;
 
 /**
  * Model class to helps users getting info about an specific tweet
@@ -10,25 +8,17 @@ import java.util.Date;
 public class Tweet {
 	
 	private String id;
-	
 	private String permalink;
-	
 	private String username;
-	
 	private String text;
-	
-	private Date date;
-	
+	private String date;
 	private int retweets;
-
 	private int favorites;
-	
 	private String mentions;
-	
 	private String hashtags;
-	
 	private String geo;
-	
+	private String avatarUrl;
+
 	public Tweet() {
 	}
 
@@ -64,11 +54,11 @@ public class Tweet {
 		this.text = text;
 	}
 
-	public Date getDate() {
+	public String getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(String date) {
 		this.date = date;
 	}
 
@@ -111,5 +101,28 @@ public class Tweet {
 	public void setGeo(String geo) {
 		this.geo = geo;
 	}
-	
+
+	public String getAvatarUrl() {
+		return avatarUrl;
+	}
+
+	public void setAvatarUrl(String avatarUrl) {
+		this.avatarUrl = avatarUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "Tweet{" +
+				"id='" + id + '\'' +
+				", permalink='" + permalink + '\'' +
+				", username='" + username + '\'' +
+				", text='" + text + '\'' +
+				", date=" + date +
+				", retweets=" + retweets +
+				", favorites=" + favorites +
+				", mentions='" + mentions + '\'' +
+				", hashtags='" + hashtags + '\'' +
+				", geo='" + geo + '\'' +
+				'}';
+	}
 }

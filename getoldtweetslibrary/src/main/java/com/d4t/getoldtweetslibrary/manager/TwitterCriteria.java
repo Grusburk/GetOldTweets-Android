@@ -1,4 +1,4 @@
-package me.jhenrique.manager;
+package com.d4t.getoldtweetslibrary.manager;
 
 /**
  * A class to guide how the tweets must be searched on {@link TweetManager}

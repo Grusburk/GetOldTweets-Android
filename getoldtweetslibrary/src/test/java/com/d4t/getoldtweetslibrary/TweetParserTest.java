@@ -81,6 +81,14 @@ public class TweetParserTest {
     }
 
     @Test
+    public void testParsingTheFullNameOfATweet() {
+        Element tweet = elements.first();
+        String name = tweet.select("strong.fullname").text();
+        Assert.assertTrue(name.length() > 0);
+        Assert.assertEquals("azad", name);
+    }
+
+    @Test
     public void testParsingAvatarUrlOfATweet() {
         Element tweet = elements.first();
         String avatarUrl = tweet.select("td.avatar a img").attr("src");

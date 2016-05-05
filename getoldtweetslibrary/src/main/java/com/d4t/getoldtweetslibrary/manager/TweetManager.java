@@ -1,6 +1,8 @@
 package com.d4t.getoldtweetslibrary.manager;
 
-import android.support.annotation.NonNull;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 
 import com.d4t.getoldtweetslibrary.model.Tweet;
 
@@ -15,35 +17,39 @@ import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-/**
- * Class to getting tweets based on username and optional time constraints
- * 
- * @author Jefferson Henrique
- */
 public class TweetManager {
 
+    private static final int TWEETS_FETCHED = 12;
     private final List<Tweet> tweets = new ArrayList<>();
+    private Handler handler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == TWEETS_FETCHED)  {
+                callback.onResponse(tweets);
+            }
+        }
+    };
+    private TwitterCallback callback;
     /**
-	 * @param tweetCount (Parameter used by Twitter to do pagination of results)
-	 * @return JSON response used by Twitter to build its results
-	 * @throws Exception
+     * @param querySearch (The word to search for)
+     * @param tweetCount (Number of tweets you want)
+     * @param callback (Callback that will receive the result and/or error)
 	 */
-	public void executeTwitterQuery(@NonNull final String querySearch, final int tweetCount, final TwitterCallback callback) {
+	public void executeTwitterQuery(final String querySearch, final int tweetCount, final TwitterCallback callback) {
+        this.callback = callback;
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 String url = String.format("https://mobile.twitter.com/search?q=%s", querySearch);
-
                 try {
                     String html = new TwitterTask().execute(url).get();
-                    Document doc = Jsoup.parse(html);
-                    Elements elements = doc.select("table.tweet");
+                    Document doc = getDocumentFromHtmlString(html, false);
+                    Elements elements = getTweetsFromDocument(doc);
                     tweets.addAll(parse(elements));
                     while (tweets.size() < tweetCount) {
                         String continueUrl = doc.select("div.w-button-more a").attr("href");
                         if ( continueUrl == null || continueUrl.length() == 0) {
-                            callback.onResponse(tweets);
                             break;
                         }
                         url = String.format("https://mobile.twitter.com%s", continueUrl);
@@ -52,40 +58,17 @@ public class TweetManager {
                         elements = doc.select("table.tweet");
                         tweets.addAll(parse(elements));
                     }
-                    callback.onResponse(tweets);
                 } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+
                     callback.onFailure(e.getCause());
+                } finally {
+                    handler.sendEmptyMessage(TWEETS_FETCHED);
                 }
             }
         });
         thread.start();
 	}
-
-
-
-//	/**
-//	 * @param criteria An object of the class {@link TwitterCriteria} to indicate how tweets must be searched
-//	 * @return A list of all tweets found
-//	 */
-//	public void getTweets(TwitterCriteria criteria) {
-//		List<Tweet> results = new ArrayList<Tweet>();
-////        getURLResponse();
-////		try {
-////			String refreshCursor = null;
-////			outerLace: while (true) {
-//        try {
-////            getURLResponse(criteria.getQuerySearch(), null, new TwitterTask.HtmlResultHandler() {
-////                @Override
-////                public void didRecieveHtml(String html) {
-////                    Document doc = Jsoup.parse(html);
-////                    Elements elements = doc.select("table.tweet");
-////                    List<Tweet> tweetList = parse(elements);
-////                }
-////            });
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     public Document getDocumentFromHtmlString(String html, boolean isPartialHtml) {
         if (isPartialHtml) {
@@ -101,12 +84,20 @@ public class TweetManager {
     public List<Tweet> parse(Elements tweets) {
         List<Tweet> tweetList = new ArrayList<>();
         for (Element tweet : tweets) {
-            String usernameTweet = tweet.select("span.username.js-action-profile-name b").text();
+            String usernameTweet = tweet.select("div.username").text();
             String txt = tweet.select("div.tweet-text").text().replaceAll("[^\\u0000-\\uFFFF]", "");
-//            int retweets = Integer.valueOf(tweet.select("span.ProfileTweet-action--retweet span.ProfileTweet-actionCount").attr("data-tweet-stat-count").replaceAll(",", ""));
-//            int favorites = Integer.valueOf(tweet.select("span.ProfileTweet-action--favorite span.ProfileTweet-actionCount").attr("data-tweet-stat-count").replaceAll(",", ""));
+            String fullname = tweet.select("strong.fullname").text();
             String dateMs = tweet.select("td.timestamp a").text(); //Long.valueOf(tweet.select("small.time span.js-short-timestamp").attr("data-time-ms"));
             String avatarUrl = tweet.select("td.avatar a img").attr("src");
+            Tweet t = new Tweet();
+            t.setUsername(usernameTweet);
+            t.setFullName(fullname);
+            t.setText(txt);
+            t.setDate(dateMs);
+            t.setAvatarUrl(avatarUrl);
+            tweetList.add(t);
+//            int retweets = Integer.valueOf(tweet.select("span.ProfileTweet-action--retweet span.ProfileTweet-actionCount").attr("data-tweet-stat-count").replaceAll(",", ""));
+//            int favorites = Integer.valueOf(tweet.select("span.ProfileTweet-action--favorite span.ProfileTweet-actionCount").attr("data-tweet-stat-count").replaceAll(",", ""));
 //            String id = tweet.attr("data-tweet-id");
 //            String permalink = tweet.attr("data-permalink-path");
 
@@ -116,21 +107,13 @@ public class TweetManager {
 //                geo = geoElement.attr("title");
 //            }
 
-//            Date date = new Date(dateMs);
-
-            Tweet t = new Tweet();
-//            t.setId(id);
             //t.setPermalink("https://twitter.com"+permalink);
-            t.setUsername(usernameTweet);
-            t.setText(txt);
-            t.setDate(dateMs);
-            t.setAvatarUrl(avatarUrl);
+//            t.setId(id);
 //            t.setRetweets(retweets);
 //            t.setFavorites(favorites);
 //            t.setMentions(processTerms("(@\\w*)", txt));
 //            t.setHashtags(processTerms("(#\\w*)", txt));
 //            t.setGeo(geo);
-            tweetList.add(t);
         }
         return tweetList;
     }

@@ -1,7 +1,6 @@
 package com.d4t.getoldtweetslibrary.manager;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,23 +18,20 @@ public class TwitterTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... params) {
         String urlString = params[0];
-        String html = "";
-        Log.i(TAG, "do in background");
+        StringBuilder html = new StringBuilder();
         try {
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            Log.i(TAG, ""+connection.getResponseMessage());
             String line;
             while ((line = reader.readLine()) != null) {
-                html += line;
+                html.append(line);
             }
             connection.disconnect();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return html;
+        return html.toString();
     }
-
 }
 

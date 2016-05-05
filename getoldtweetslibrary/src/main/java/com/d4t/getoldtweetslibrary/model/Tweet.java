@@ -7,36 +7,45 @@ package com.d4t.getoldtweetslibrary.model;
  */
 public class Tweet {
 	
-	private String id;
-	private String permalink;
+//	private String id;
+//	private String permalink;
 	private String username;
+	private String fullName;
 	private String text;
 	private String date;
-	private int retweets;
-	private int favorites;
-	private String mentions;
-	private String hashtags;
-	private String geo;
+//	private int retweets;
+//	private int favorites;
+//	private String mentions;
+//	private String hashtags;
+//	private String geo;
 	private String avatarUrl;
 
 	public Tweet() {
 	}
 
-	public String getId() {
-		return id;
-	}
+    public String getFullName() {
+        return fullName;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 
-	public String getPermalink() {
-		return permalink;
-	}
+//    public String getId() {
+//		return id;
+//	}
 
-	public void setPermalink(String permalink) {
-		this.permalink = permalink;
-	}
+//	public void setId(String id) {
+//		this.id = id;
+//	}
+
+//	public String getPermalink() {
+//		return permalink;
+//	}
+
+//	public void setPermalink(String permalink) {
+//		this.permalink = permalink;
+//	}
 
 	public String getUsername() {
 		return username;
@@ -62,45 +71,45 @@ public class Tweet {
 		this.date = date;
 	}
 
-	public int getRetweets() {
-		return retweets;
-	}
+//	public int getRetweets() {
+//		return retweets;
+//	}
 
-	public void setRetweets(int retweets) {
-		this.retweets = retweets;
-	}
+//	public void setRetweets(int retweets) {
+//		this.retweets = retweets;
+//	}
 
-	public int getFavorites() {
-		return favorites;
-	}
+//	public int getFavorites() {
+//		return favorites;
+//	}
 
-	public void setFavorites(int favorites) {
-		this.favorites = favorites;
-	}
+//	public void setFavorites(int favorites) {
+//		this.favorites = favorites;
+//	}
 	
-	public String getMentions() {
-		return mentions;
-	}
+//	public String getMentions() {
+//		return mentions;
+//	}
 
-	public void setMentions(String mentions) {
-		this.mentions = mentions;
-	}
+//	public void setMentions(String mentions) {
+//		this.mentions = mentions;
+//	}
 	
-	public String getHashtags() {
-		return hashtags;
-	}
+//	public String getHashtags() {
+//		return hashtags;
+//	}
 
-	public void setHashtags(String hashtags) {
-		this.hashtags = hashtags;
-	}
+//	public void setHashtags(String hashtags) {
+//		this.hashtags = hashtags;
+//	}
 
-	public String getGeo() {
-		return geo;
-	}
+//	public String getGeo() {
+//		return geo;
+//	}
 
-	public void setGeo(String geo) {
-		this.geo = geo;
-	}
+//	public void setGeo(String geo) {
+//		this.geo = geo;
+//	}
 
 	public String getAvatarUrl() {
 		return avatarUrl;
@@ -113,16 +122,9 @@ public class Tweet {
 	@Override
 	public String toString() {
 		return "Tweet{" +
-				"id='" + id + '\'' +
-				", permalink='" + permalink + '\'' +
 				", username='" + username + '\'' +
 				", text='" + text + '\'' +
 				", date=" + date +
-				", retweets=" + retweets +
-				", favorites=" + favorites +
-				", mentions='" + mentions + '\'' +
-				", hashtags='" + hashtags + '\'' +
-				", geo='" + geo + '\'' +
 				'}';
 	}
 }
